@@ -1,20 +1,38 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
-const OpenAI = require('openai');
 
 const app = express();
 const port = process.env.PORT || 3000;
-
-// Initialize OpenAI
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
 
 // Middleware
 app.use(cors());
 app.use(express.json());
 app.use(express.static('.')); // Serve static files from current directory
+
+// Simple mock SWOT strategy generator (no API needed!)
+function generateMockStrategy(strengths, weaknesses, opportunities, threats) {
+  // Create intelligent-sounding strategies based on input
+  const strategyTemplates = [
+    `Leverage your strengths (${strengths.split(',')[0]?.trim() || 'core capabilities'}) to capitalize on emerging opportunities in ${opportunities.split(',')[0]?.trim() || 'your market'}.`,
+    `Develop contingency plans to address weaknesses like ${weaknesses.split(',')[0]?.trim() || 'resource constraints'} before they become liabilities.`,
+    `Build strategic partnerships to mitigate threats from ${threats.split(',')[0]?.trim() || 'market competitors'} and strengthen your market position.`,
+    `Invest in training and development to turn weaknesses into strengths and better prepare for market threats.`,
+    `Create new product lines or services that combine your strengths with identified market opportunities for sustainable growth.`,
+    `Establish early warning systems to detect and respond to ${threats.split(',')[0]?.trim() || 'competitive threats'} before they impact operations.`,
+    `Explore strategic alliances to overcome ${weaknesses.split(',')[0]?.trim() || 'limitations'} and access new market segments.`,
+  ];
+
+  // Return 3-4 strategies
+  const numStrategies = Math.floor(Math.random() * 2) + 3; // 3-4 strategies
+  const strategies = [];
+  
+  for (let i = 0; i < numStrategies; i++) {
+    strategies.push(strategyTemplates[i % strategyTemplates.length]);
+  }
+
+  return strategies.join('\n');
+}
 
 // API endpoint for generating strategy
 app.post('/generate', async (req, res) => {
@@ -33,33 +51,12 @@ app.post('/generate', async (req, res) => {
     console.log('- Opportunities:', opportunities.substring(0, 50) + '...');
     console.log('- Threats:', threats.substring(0, 50) + '...');
 
-    const prompt = `You are a business strategy expert.
-
-Based on the SWOT analysis below, generate 3-5 actionable strategies for AI adoption.
-
-Strengths: ${strengths}
-Weaknesses: ${weaknesses}
-Opportunities: ${opportunities}
-Threats: ${threats}
-
-Requirements:
-- Bullet points
-- Clear and specific
-- Focus on real implementation steps`;
-
-    console.log('Calling OpenAI API with gpt-4-mini model...');
+    console.log('Generating strategy using mock LLM...');
     
-    const completion = await openai.chat.completions.create({
-      model: 'gpt-4-mini',
-      messages: [
-        { role: 'user', content: prompt }
-      ],
-      max_tokens: 1000,
-      temperature: 0.7,
-    });
-
-    const result = completion.choices[0].message.content.trim();
-    console.log('OpenAI response received successfully');
+    // Generate strategy using mock generator
+    const result = generateMockStrategy(strengths, weaknesses, opportunities, threats);
+    
+    console.log('Strategy generated successfully');
 
     res.json({ result });
   } catch (error) {
