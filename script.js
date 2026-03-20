@@ -16,11 +16,14 @@ document.getElementById('swot-form').addEventListener('submit', async (event) =>
     return;
   }
 
-  // Show loading
+  // Show loading state
   showLoading();
 
   try {
-    const response = await fetch('/generate-strategy', {
+    console.log('Sending SWOT data to backend...');
+    console.log('Endpoint: http://localhost:3000/generate');
+    
+    const response = await fetch('http://localhost:3000/generate', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -28,15 +31,24 @@ document.getElementById('swot-form').addEventListener('submit', async (event) =>
       body: JSON.stringify(data),
     });
 
+    console.log('Response status:', response.status);
+
     if (!response.ok) {
-      throw new Error(`Server error: ${response.status}`);
+      const errorData = await response.json();
+      throw new Error(errorData.error || `Server error: ${response.status}`);
     }
 
     const result = await response.json();
-    showOutput(result.strategy);
+    console.log('Response received:', result);
+    
+    if (!result.result) {
+      throw new Error('Invalid response format from server');
+    }
+
+    showOutput(result.result);
   } catch (error) {
-    console.error('Error:', error);
-    showError('Failed to generate strategy. Please try again.');
+    console.error('Error:', error.message);
+    showError(error.message || 'Failed to generate strategy. Please try again.');
   } finally {
     hideLoading();
   }
@@ -53,8 +65,22 @@ function hideLoading() {
 }
 
 function showOutput(strategy) {
-  document.getElementById('strategy-content').innerHTML = strategy.replace(/\n/g, '<br>');
+  // Parse the strategy text into bullet points
+  const lines = strategy.split('\n').filter(line => line.trim());
+  
+  let html = '<ul class="strategy-list">';
+  lines.forEach(line => {
+    // Remove common bullet point characters
+    let cleanLine = line.replace(/^[-•*]\s*/, '').trim();
+    if (cleanLine) {
+      html += `<li>${cleanLine}</li>`;
+    }
+  });
+  html += '</ul>';
+  
+  document.getElementById('strategy-content').innerHTML = html;
   document.getElementById('output').classList.remove('hidden');
+  document.getElementById('error').classList.add('hidden');
 }
 
 function showError(message) {

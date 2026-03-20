@@ -3,66 +3,129 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>SWOT AI Tool</title>
-  <link rel="stylesheet" href="styles.css" />
+  <title>SWOT AI Tool - AI-Powered Strategy Generator</title>
+  <link rel="stylesheet" href="swot-tool-modern.css" />
 </head>
 <body>
-  <header class="site-header">
-    <div class="container">
-      <h1 class="logo">SWOT AI Tool</h1>
-      <p class="subtitle">Input your SWOT analysis and get AI-powered strategic recommendations.</p>
-    </div>
-  </header>
+  <div class="page-wrapper">
+    <!-- Header Section -->
+    <header class="header">
+      <div class="header-content">
+        <h1 class="header-title">🎯 SWOT AI Tool</h1>
+        <p class="header-subtitle">Enter your SWOT analysis and let AI generate actionable strategies</p>
+      </div>
+    </header>
 
-  <main class="container">
-    <div class="tool">
-      <form id="swot-form" class="swot-form">
-        <div class="form-grid">
-          <div class="form-group">
-            <label for="strengths">Strengths</label>
-            <textarea id="strengths" name="strengths" placeholder="List your organization's internal advantages..." rows="4"></textarea>
-          </div>
-
-          <div class="form-group">
-            <label for="weaknesses">Weaknesses</label>
-            <textarea id="weaknesses" name="weaknesses" placeholder="List your organization's internal challenges..." rows="4"></textarea>
-          </div>
-
-          <div class="form-group">
-            <label for="opportunities">Opportunities</label>
-            <textarea id="opportunities" name="opportunities" placeholder="List external trends or possibilities..." rows="4"></textarea>
-          </div>
-
-          <div class="form-group">
-            <label for="threats">Threats</label>
-            <textarea id="threats" name="threats" placeholder="List external risks or obstacles..." rows="4"></textarea>
-          </div>
+    <!-- Main Content -->
+    <main class="main-content">
+      <div class="content-wrapper">
+        <!-- Instructions Card -->
+        <div class="instructions-card">
+          <h2>How to Use</h2>
+          <p>Fill in each SWOT category with information about your business or project, then click "Generate Strategy" to get AI-powered recommendations.</p>
         </div>
 
-        <button type="submit" class="generate-btn">Generate AI Strategy</button>
-      </form>
+        <!-- Form Container -->
+        <div class="form-container">
+          <form id="swot-form" class="swot-form">
+            <!-- SWOT Grid -->
+            <div class="swot-inputs-grid">
+              <!-- Strengths -->
+              <div class="form-group strengths">
+                <div class="form-label-box">
+                  <span class="form-label">💪 Strengths</span>
+                  <span class="form-hint">Internal advantages</span>
+                </div>
+                <textarea 
+                  id="strengths" 
+                  name="strengths" 
+                  placeholder="e.g., Strong team, Market position, Unique technology..."
+                  rows="5"
+                  class="form-input">
+                </textarea>
+              </div>
 
-      <div id="output" class="output hidden">
-        <h3>AI-Generated Strategy</h3>
-        <div id="strategy-content" class="strategy-content"></div>
+              <!-- Weaknesses -->
+              <div class="form-group weaknesses">
+                <div class="form-label-box">
+                  <span class="form-label">⚠️ Weaknesses</span>
+                  <span class="form-hint">Internal challenges</span>
+                </div>
+                <textarea 
+                  id="weaknesses" 
+                  name="weaknesses" 
+                  placeholder="e.g., Limited budget, Skills gap, Resource constraints..."
+                  rows="5"
+                  class="form-input">
+                </textarea>
+              </div>
+
+              <!-- Opportunities -->
+              <div class="form-group opportunities">
+                <div class="form-label-box">
+                  <span class="form-label">🚀 Opportunities</span>
+                  <span class="form-hint">External possibilities</span>
+                </div>
+                <textarea 
+                  id="opportunities" 
+                  name="opportunities" 
+                  placeholder="e.g., Growing market demand, New technologies, Partnerships..."
+                  rows="5"
+                  class="form-input">
+                </textarea>
+              </div>
+
+              <!-- Threats -->
+              <div class="form-group threats">
+                <div class="form-label-box">
+                  <span class="form-label">🔴 Threats</span>
+                  <span class="form-hint">External risks</span>
+                </div>
+                <textarea 
+                  id="threats" 
+                  name="threats" 
+                  placeholder="e.g., Competition, Market changes, Regulatory issues..."
+                  rows="5"
+                  class="form-input">
+                </textarea>
+              </div>
+            </div>
+
+            <!-- Submit Button -->
+            <button type="submit" class="generate-btn">
+              <span class="btn-text">✨ Generate Strategy</span>
+            </button>
+          </form>
+
+          <!-- Loading State -->
+          <div id="loading" class="loading hidden">
+            <div class="spinner"></div>
+            <p class="loading-text">🤖 Generating your strategic recommendations...</p>
+          </div>
+
+          <!-- Error Message -->
+          <div id="error" class="error-box hidden">
+            <p class="error-icon">⚠️</p>
+            <p id="error-message" class="error-text"></p>
+          </div>
+
+          <!-- Output Section -->
+          <div id="output" class="output-container hidden">
+            <div class="output-header">
+              <h2>🎯 AI-Generated Strategy</h2>
+              <p class="output-subtitle">Based on your SWOT analysis</p>
+            </div>
+            <div id="strategy-content" class="strategy-content"></div>
+          </div>
+        </div>
       </div>
+    </main>
 
-      <div id="loading" class="loading hidden">
-        <div class="spinner"></div>
-        <p>Generating your strategic recommendations...</p>
-      </div>
-
-      <div id="error" class="error hidden">
-        <p id="error-message"></p>
-      </div>
-    </div>
-  </main>
-
-  <footer class="site-footer">
-    <div class="container">
-      <p>SWOT AI Tool • Powered by OpenAI</p>
-    </div>
-  </footer>
+    <!-- Footer -->
+    <footer class="footer">
+      <p>SWOT AI Tool • Powered by OpenAI GPT-4 Mini</p>
+    </footer>
+  </div>
 
   <script src="script.js"></script>
 </body>

@@ -4,7 +4,7 @@ const cors = require('cors');
 const OpenAI = require('openai');
 
 const app = express();
-const port = process.env.PORT || 8000;
+const port = process.env.PORT || 3000;
 
 // Initialize OpenAI
 const openai = new OpenAI({
@@ -17,35 +17,40 @@ app.use(express.json());
 app.use(express.static('.')); // Serve static files from current directory
 
 // API endpoint for generating strategy
-app.post('/generate-strategy', async (req, res) => {
+app.post('/generate', async (req, res) => {
   try {
     const { strengths, weaknesses, opportunities, threats } = req.body;
 
+    // Validation
     if (!strengths || !weaknesses || !opportunities || !threats) {
+      console.error('Missing SWOT fields in request');
       return res.status(400).json({ error: 'All SWOT fields are required' });
     }
 
-    const prompt = `Act as a business strategist. Based on the following SWOT analysis, generate clear, actionable strategic recommendations for a company considering AI adoption.
+    console.log('Received SWOT input:');
+    console.log('- Strengths:', strengths.substring(0, 50) + '...');
+    console.log('- Weaknesses:', weaknesses.substring(0, 50) + '...');
+    console.log('- Opportunities:', opportunities.substring(0, 50) + '...');
+    console.log('- Threats:', threats.substring(0, 50) + '...');
 
-Strengths:
-${strengths}
+    const prompt = `You are a business strategy expert.
 
-Weaknesses:
-${weaknesses}
+Based on the SWOT analysis below, generate 3-5 actionable strategies for AI adoption.
 
-Opportunities:
-${opportunities}
+Strengths: ${strengths}
+Weaknesses: ${weaknesses}
+Opportunities: ${opportunities}
+Threats: ${threats}
 
-Threats:
-${threats}
+Requirements:
+- Bullet points
+- Clear and specific
+- Focus on real implementation steps`;
 
-Provide:
-- 3–5 strategic actions
-- Keep them concise and practical
-- Focus on AI adoption decisions`;
-
+    console.log('Calling OpenAI API with gpt-4-mini model...');
+    
     const completion = await openai.chat.completions.create({
-      model: 'gpt-4o',
+      model: 'gpt-4-mini',
       messages: [
         { role: 'user', content: prompt }
       ],
@@ -53,15 +58,18 @@ Provide:
       temperature: 0.7,
     });
 
-    const strategy = completion.choices[0].message.content.trim();
+    const result = completion.choices[0].message.content.trim();
+    console.log('OpenAI response received successfully');
 
-    res.json({ strategy });
+    res.json({ result });
   } catch (error) {
-    console.error('Error generating strategy:', error);
+    console.error('Error generating strategy:', error.message);
+    console.error('Full error:', error);
     res.status(500).json({ error: 'Failed to generate strategy. Please try again.' });
   }
 });
 
 app.listen(port, () => {
-  console.log(`SWOT AI Tool server running at http://localhost:${port}`);
+  console.log(`✓ SWOT AI Tool server running at http://localhost:${port}`);
+  console.log(`✓ POST endpoint: http://localhost:${port}/generate`);
 });
