@@ -9,6 +9,7 @@ const port = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 app.use(express.static('.')); // Serve static files from current directory
+app.use(express.static('public')); // Also serve from public folder
 
 // Simple mock SWOT strategy generator (no API needed!)
 function generateMockStrategy(strengths, weaknesses, opportunities, threats) {
