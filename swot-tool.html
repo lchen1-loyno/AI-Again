@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SWOT AI Tool</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <h1 class="logo">SWOT AI Tool</h1>
+      <p class="subtitle">Input your SWOT analysis and get AI-powered strategic recommendations.</p>
+    </div>
+  </header>
+
+  <main class="container">
+    <div class="tool">
+      <form id="swot-form" class="swot-form">
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="strengths">Strengths</label>
+            <textarea id="strengths" name="strengths" placeholder="List your organization's internal advantages..." rows="4"></textarea>
+          </div>
+
+          <div class="form-group">
+            <label for="weaknesses">Weaknesses</label>
+            <textarea id="weaknesses" name="weaknesses" placeholder="List your organization's internal challenges..." rows="4"></textarea>
+          </div>
+
+          <div class="form-group">
+            <label for="opportunities">Opportunities</label>
+            <textarea id="opportunities" name="opportunities" placeholder="List external trends or possibilities..." rows="4"></textarea>
+          </div>
+
+          <div class="form-group">
+            <label for="threats">Threats</label>
+            <textarea id="threats" name="threats" placeholder="List external risks or obstacles..." rows="4"></textarea>
+          </div>
+        </div>
+
+        <button type="submit" class="generate-btn">Generate AI Strategy</button>
+      </form>
+
+      <div id="output" class="output hidden">
+        <h3>AI-Generated Strategy</h3>
+        <div id="strategy-content" class="strategy-content"></div>
+      </div>
+
+      <div id="loading" class="loading hidden">
+        <div class="spinner"></div>
+        <p>Generating your strategic recommendations...</p>
+      </div>
+
+      <div id="error" class="error hidden">
+        <p id="error-message"></p>
+      </div>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <p>SWOT AI Tool • Powered by OpenAI</p>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
