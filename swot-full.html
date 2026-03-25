@@ -1,0 +1,807 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SWOT Explorer - Complete AI Tool</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      line-height: 1.6;
+      color: #333;
+      background: #f8f9fa;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    /* Header */
+    .header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 3rem 0;
+      text-align: center;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .header h1 {
+      font-size: 2.5rem;
+      margin-bottom: 0.5rem;
+      font-weight: 700;
+    }
+
+    .header p {
+      font-size: 1.2rem;
+      opacity: 0.9;
+    }
+
+    /* Navigation */
+    .nav-tabs {
+      display: flex;
+      justify-content: center;
+      background: white;
+      border-radius: 12px;
+      margin: 2rem auto;
+      max-width: 600px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+    }
+
+    .nav-tab {
+      flex: 1;
+      padding: 1rem;
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      font-size: 1rem;
+    }
+
+    .nav-tab:hover {
+      background: #f8f9fa;
+    }
+
+    .nav-tab.active {
+      background: #4f46e5;
+      color: white;
+    }
+
+    /* Content */
+    .main-content {
+      min-height: 60vh;
+    }
+
+    .tab-content {
+      display: none;
+      background: white;
+      border-radius: 12px;
+      padding: 2rem;
+      margin: 2rem 0;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    /* Educational Content */
+    .section {
+      margin-bottom: 3rem;
+    }
+
+    .section-title {
+      font-size: 2rem;
+      color: #1e293b;
+      margin-bottom: 1rem;
+      text-align: center;
+      font-weight: 700;
+    }
+
+    .section-intro {
+      font-size: 1.1rem;
+      color: #64748b;
+      text-align: center;
+      margin-bottom: 2rem;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .swot-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1.5rem;
+      margin: 2rem 0;
+    }
+
+    .swot-card {
+      background: white;
+      padding: 1.5rem;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      border-left: 4px solid;
+      transition: transform 0.2s ease;
+    }
+
+    .swot-card:hover {
+      transform: translateY(-2px);
+    }
+
+    .swot-card.strengths { border-left-color: #10b981; }
+    .swot-card.weaknesses { border-left-color: #ef4444; }
+    .swot-card.opportunities { border-left-color: #3b82f6; }
+    .swot-card.threats { border-left-color: #f59e0b; }
+
+    .swot-card h3 {
+      margin-bottom: 0.5rem;
+      font-size: 1.25rem;
+      font-weight: 600;
+    }
+
+    .swot-card p {
+      color: #64748b;
+      margin-bottom: 1rem;
+    }
+
+    .swot-card ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    .swot-card li {
+      padding: 0.25rem 0;
+      color: #475569;
+    }
+
+    .benefits-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1.5rem;
+      margin: 2rem 0;
+    }
+
+    .benefit-card {
+      background: white;
+      padding: 1.5rem;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    .benefit-icon {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+    }
+
+    .benefit-card h3 {
+      margin-bottom: 0.5rem;
+      color: #1e293b;
+      font-size: 1.1rem;
+    }
+
+    .benefit-card p {
+      color: #64748b;
+      font-size: 0.9rem;
+    }
+
+    .steps-list {
+      max-width: 600px;
+      margin: 2rem auto;
+      list-style: none;
+      counter-reset: step-counter;
+    }
+
+    .steps-list li {
+      counter-increment: step-counter;
+      margin-bottom: 1.5rem;
+      padding: 1.5rem;
+      background: #f8f9fa;
+      border-radius: 8px;
+      position: relative;
+      padding-left: 4rem;
+    }
+
+    .steps-list li::before {
+      content: counter(step-counter);
+      position: absolute;
+      left: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      background: #4f46e5;
+      color: white;
+      width: 2rem;
+      height: 2rem;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+    }
+
+    /* Form Styles */
+    .swot-form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+      margin: 2rem 0;
+    }
+
+    .form-group {
+      background: #f8f9fa;
+      border-radius: 8px;
+      padding: 1.5rem;
+      border-left: 4px solid;
+    }
+
+    .form-group.strengths { border-left-color: #10b981; }
+    .form-group.weaknesses { border-left-color: #ef4444; }
+    .form-group.opportunities { border-left-color: #3b82f6; }
+    .form-group.threats { border-left-color: #f59e0b; }
+
+    .form-group h3 {
+      margin-bottom: 1rem;
+      font-size: 1.25rem;
+      font-weight: 600;
+    }
+
+    .form-group textarea {
+      width: 100%;
+      min-height: 100px;
+      padding: 0.75rem;
+      border: 1px solid #d1d5db;
+      border-radius: 6px;
+      font-family: inherit;
+      resize: vertical;
+      font-size: 0.9rem;
+    }
+
+    .form-group textarea:focus {
+      outline: none;
+      border-color: #4f46e5;
+      box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+    }
+
+    .generate-button {
+      background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+      color: white;
+      border: none;
+      padding: 1rem 2rem;
+      border-radius: 8px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.2s ease;
+      display: block;
+      margin: 2rem auto;
+    }
+
+    .generate-button:hover {
+      transform: translateY(-2px);
+    }
+
+    /* Results */
+    .results-section {
+      background: white;
+      border-radius: 12px;
+      padding: 2rem;
+      margin: 2rem 0;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .strategy-list {
+      list-style: none;
+      padding: 0;
+    }
+
+    .strategy-list li {
+      padding: 1rem;
+      margin-bottom: 1rem;
+      background: #f8f9fa;
+      border-radius: 8px;
+      border-left: 4px solid #4f46e5;
+      position: relative;
+      padding-left: 3rem;
+    }
+
+    .strategy-list li::before {
+      content: "🎯";
+      position: absolute;
+      left: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+
+    /* Loading */
+    .loading-section {
+      text-align: center;
+      padding: 3rem;
+    }
+
+    .loading-spinner {
+      display: inline-block;
+      width: 40px;
+      height: 40px;
+      border: 4px solid #f3f3f3;
+      border-top: 4px solid #4f46e5;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-bottom: 1rem;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* Error */
+    .error-message {
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+      color: #dc2626;
+      padding: 1rem;
+      border-radius: 8px;
+      margin: 1rem 0;
+      text-align: center;
+    }
+
+    /* CTA Button */
+    .cta-button {
+      display: inline-block;
+      background: #4f46e5;
+      color: white;
+      padding: 0.75rem 1.5rem;
+      border-radius: 6px;
+      text-decoration: none;
+      font-weight: 600;
+      transition: background 0.2s ease;
+      cursor: pointer;
+      border: none;
+    }
+
+    .cta-button:hover {
+      background: #4338ca;
+    }
+
+    /* Footer */
+    .footer {
+      background: #1e293b;
+      color: white;
+      text-align: center;
+      padding: 2rem 0;
+      margin-top: 3rem;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .header h1 {
+        font-size: 2rem;
+      }
+
+      .nav-tabs {
+        flex-direction: column;
+        max-width: 100%;
+      }
+
+      .swot-grid, .benefits-grid, .swot-form-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .tab-content {
+        padding: 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <header class="header">
+    <div class="container">
+      <h1>🎯 Complete SWOT Explorer</h1>
+      <p>Learn SWOT analysis, create your own, and generate AI-powered strategies</p>
+    </div>
+  </header>
+
+  <div class="container">
+    <!-- Navigation -->
+    <div class="nav-tabs">
+      <button class="nav-tab active" onclick="showTab('learn')">📚 Learn SWOT</button>
+      <button class="nav-tab" onclick="showTab('analyze')">🔍 Create Analysis</button>
+      <button class="nav-tab" onclick="showTab('generate')">🤖 AI Strategies</button>
+    </div>
+
+    <main class="main-content">
+
+      <!-- Learn Tab -->
+      <div id="learn" class="tab-content active">
+        <div class="section">
+          <h2 class="section-title">What is SWOT Analysis?</h2>
+          <p class="section-intro">
+            SWOT analysis is a strategic planning tool used to evaluate Strengths, Weaknesses,
+            Opportunities, and Threats related to a decision or problem.
+          </p>
+
+          <div class="swot-grid">
+            <div class="swot-card strengths">
+              <h3>💪 Strengths</h3>
+              <p>Internal advantages that help you succeed.</p>
+              <ul>
+                <li>Strong brand recognition</li>
+                <li>Skilled employees</li>
+                <li>Efficient operations</li>
+                <li>Unique technology</li>
+              </ul>
+            </div>
+            <div class="swot-card weaknesses">
+              <h3>⚠️ Weaknesses</h3>
+              <p>Internal challenges that could hold you back.</p>
+              <ul>
+                <li>Limited resources</li>
+                <li>Outdated systems</li>
+                <li>Poor visibility</li>
+                <li>High costs</li>
+              </ul>
+            </div>
+            <div class="swot-card opportunities">
+              <h3>🚀 Opportunities</h3>
+              <p>External trends or possibilities you can take advantage of.</p>
+              <ul>
+                <li>Market growth</li>
+                <li>New partnerships</li>
+                <li>Emerging technology</li>
+                <li>Changing regulations</li>
+              </ul>
+            </div>
+            <div class="swot-card threats">
+              <h3>⚡ Threats</h3>
+              <p>External risks or obstacles you should prepare for.</p>
+              <ul>
+                <li>New competitors</li>
+                <li>Regulatory change</li>
+                <li>Economic shifts</li>
+                <li>Technology disruption</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="section">
+          <h2 class="section-title">Why SWOT Analysis is Useful</h2>
+          <p class="section-intro">
+            SWOT helps teams and leaders get clear about what matters most and make stronger decisions.
+          </p>
+
+          <div class="benefits-grid">
+            <div class="benefit-card">
+              <div class="benefit-icon">✅</div>
+              <h3>Understand internal capabilities</h3>
+              <p>See what you do well and where you can improve.</p>
+            </div>
+            <div class="benefit-card">
+              <div class="benefit-icon">🌍</div>
+              <h3>Spot risks & opportunities</h3>
+              <p>Find external forces that could help or hurt your plan.</p>
+            </div>
+            <div class="benefit-card">
+              <div class="benefit-icon">🧭</div>
+              <h3>Support better decisions</h3>
+              <p>Use insights to choose priorities with confidence.</p>
+            </div>
+            <div class="benefit-card">
+              <div class="benefit-icon">🚀</div>
+              <h3>Turn insights into action</h3>
+              <p>Shape clear next steps based on what you learn.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="section">
+          <h2 class="section-title">How to Do a SWOT Analysis</h2>
+          <p class="section-intro">
+            Follow these steps to create your own SWOT analysis.
+          </p>
+
+          <ol class="steps-list">
+            <li><strong>Define the problem or decision.</strong> Clarify the goal or challenge you want to explore.</li>
+            <li><strong>Identify internal strengths.</strong> List what you do well and what gives you an advantage.</li>
+            <li><strong>Identify internal weaknesses.</strong> Be honest about what holds you back.</li>
+            <li><strong>Look for external opportunities.</strong> Find trends or situations you can use.</li>
+            <li><strong>Identify external threats.</strong> Note risks that could affect your plan.</li>
+            <li><strong>Use insights to plan actions.</strong> Turn your findings into clear next steps.</li>
+          </ol>
+        </div>
+
+        <div class="section">
+          <h2 class="section-title">Example SWOT Analysis</h2>
+          <p class="section-intro">
+            Scenario: A company considering adopting AI tools.
+          </p>
+
+          <div class="swot-grid">
+            <div class="swot-card strengths">
+              <h3>Strengths</h3>
+              <ul>
+                <li>Strong technical team</li>
+                <li>Access to company data</li>
+                <li>Financial resources</li>
+              </ul>
+            </div>
+            <div class="swot-card weaknesses">
+              <h3>Weaknesses</h3>
+              <ul>
+                <li>Limited AI expertise</li>
+                <li>Training costs</li>
+                <li>Resistance to change</li>
+              </ul>
+            </div>
+            <div class="swot-card opportunities">
+              <h3>Opportunities</h3>
+              <ul>
+                <li>Automation improvements</li>
+                <li>Productivity gains</li>
+                <li>Competitive advantage</li>
+              </ul>
+            </div>
+            <div class="swot-card threats">
+              <h3>Threats</h3>
+              <ul>
+                <li>Fast-moving technology</li>
+                <li>Employee resistance</li>
+                <li>Data privacy concerns</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div style="text-align: center; margin: 3rem 0;">
+          <button class="cta-button" onclick="showTab('analyze')">Start Your SWOT Analysis →</button>
+        </div>
+      </div>
+
+      <!-- Analyze Tab -->
+      <div id="analyze" class="tab-content">
+        <div style="text-align: center; margin-bottom: 2rem;">
+          <h2>Create Your SWOT Analysis</h2>
+          <p style="color: #64748b; margin-top: 0.5rem;">Fill in each category with information about your business, project, or decision.</p>
+        </div>
+
+        <form id="swot-form">
+          <div class="swot-form-grid">
+            <div class="form-group strengths">
+              <h3>💪 Strengths</h3>
+              <p style="color: #64748b; font-size: 0.9rem; margin-bottom: 1rem;">Internal advantages</p>
+              <textarea
+                id="strengths"
+                name="strengths"
+                placeholder="e.g., Strong team, Market position, Unique technology, Financial stability..."
+                required></textarea>
+            </div>
+
+            <div class="form-group weaknesses">
+              <h3>⚠️ Weaknesses</h3>
+              <p style="color: #64748b; font-size: 0.9rem; margin-bottom: 1rem;">Internal challenges</p>
+              <textarea
+                id="weaknesses"
+                name="weaknesses"
+                placeholder="e.g., Limited resources, Outdated systems, Skill gaps, High costs..."
+                required></textarea>
+            </div>
+
+            <div class="form-group opportunities">
+              <h3>🚀 Opportunities</h3>
+              <p style="color: #64748b; font-size: 0.9rem; margin-bottom: 1rem;">External possibilities</p>
+              <textarea
+                id="opportunities"
+                name="opportunities"
+                placeholder="e.g., Market growth, New partnerships, Emerging technology, Changing regulations..."
+                required></textarea>
+            </div>
+
+            <div class="form-group threats">
+              <h3>⚡ Threats</h3>
+              <p style="color: #64748b; font-size: 0.9rem; margin-bottom: 1rem;">External risks</p>
+              <textarea
+                id="threats"
+                name="threats"
+                placeholder="e.g., New competitors, Economic shifts, Regulatory changes, Technology disruption..."
+                required></textarea>
+            </div>
+          </div>
+
+          <button type="submit" class="generate-button" id="generate-btn">
+            🤖 Generate AI Strategy
+          </button>
+        </form>
+      </div>
+
+      <!-- Generate Tab -->
+      <div id="generate" class="tab-content">
+        <!-- Loading State -->
+        <div id="loading-section" class="loading-section" style="display: none;">
+          <div class="loading-spinner"></div>
+          <h3>Generating Your Strategy...</h3>
+          <p>AI is analyzing your SWOT data and creating personalized recommendations.</p>
+        </div>
+
+        <!-- Error Section -->
+        <div id="error-section" class="error-message" style="display: none;">
+          <h3>❌ Error</h3>
+          <p id="error-text"></p>
+        </div>
+
+        <!-- Results Section -->
+        <div id="results-section" class="results-section" style="display: none;">
+          <h2 style="text-align: center; margin-bottom: 2rem;">🎯 Your AI-Generated Strategy</h2>
+          <p style="text-align: center; color: #64748b; margin-bottom: 2rem;">
+            Based on your SWOT analysis, here are personalized recommendations:
+          </p>
+          <ul id="strategy-output" class="strategy-list">
+            <!-- Strategy content will be inserted here -->
+          </ul>
+          <div style="text-align: center; margin-top: 2rem;">
+            <button class="cta-button" onclick="showTab('analyze')" style="margin-right: 1rem;">← Edit Analysis</button>
+            <button class="cta-button" onclick="resetForm()">🔄 New Analysis</button>
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <p>Complete SWOT Explorer • Learn, Analyze, Generate AI Strategies</p>
+    </div>
+  </footer>
+
+  <script>
+    console.log('SWOT Explorer loaded successfully!');
+
+    // Tab navigation
+    function showTab(tabName) {
+      console.log('Switching to tab:', tabName);
+
+      // Hide all tabs
+      const tabs = document.querySelectorAll('.tab-content');
+      tabs.forEach(tab => tab.classList.remove('active'));
+
+      // Remove active class from all nav buttons
+      const navButtons = document.querySelectorAll('.nav-tab');
+      navButtons.forEach(button => button.classList.remove('active'));
+
+      // Show selected tab
+      const targetTab = document.getElementById(tabName);
+      if (targetTab) {
+        targetTab.classList.add('active');
+
+        // Add active class to clicked button
+        const activeButton = Array.from(navButtons).find(btn =>
+          btn.textContent.includes(tabName === 'learn' ? 'Learn' :
+                                 tabName === 'analyze' ? 'Create' : 'AI')
+        );
+        if (activeButton) {
+          activeButton.classList.add('active');
+        }
+
+        // Scroll to top when changing tabs
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    }
+
+    // Form handling
+    document.getElementById('swot-form').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      console.log('Form submitted');
+
+      const formData = new FormData(e.target);
+      const swotData = {
+        strengths: formData.get('strengths').trim(),
+        weaknesses: formData.get('weaknesses').trim(),
+        opportunities: formData.get('opportunities').trim(),
+        threats: formData.get('threats').trim()
+      };
+
+      console.log('SWOT data:', swotData);
+
+      // Validation
+      if (!swotData.strengths || !swotData.weaknesses || !swotData.opportunities || !swotData.threats) {
+        showError('Please fill in all four SWOT categories.');
+        return;
+      }
+
+      // Show loading state
+      showLoading();
+
+      try {
+        console.log('Sending SWOT data to API...');
+        const response = await fetch('http://localhost:3000/generate', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(swotData)
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        console.log('Received response:', data);
+
+        if (data.error) {
+          throw new Error(data.error);
+        }
+
+        // Show results
+        showResults(data.result);
+        showTab('generate');
+
+      } catch (error) {
+        console.error('Error:', error);
+        showError('Failed to generate strategy. Please try again. Error: ' + error.message);
+      }
+    });
+
+    function showLoading() {
+      console.log('Showing loading state');
+      document.getElementById('loading-section').style.display = 'block';
+      document.getElementById('error-section').style.display = 'none';
+      document.getElementById('results-section').style.display = 'none';
+    }
+
+    function showError(message) {
+      console.log('Showing error:', message);
+      document.getElementById('error-text').textContent = message;
+      document.getElementById('loading-section').style.display = 'none';
+      document.getElementById('error-section').style.display = 'block';
+      document.getElementById('results-section').style.display = 'none';
+      showTab('generate');
+    }
+
+    function showResults(strategy) {
+      console.log('Showing results:', strategy);
+
+      // Format the strategy as a list
+      const formattedStrategy = strategy.split('\n')
+        .filter(line => line.trim())
+        .map(line => {
+          // Remove bullet points if they exist
+          const cleanLine = line.replace(/^[•\-\*]\s*/, '').trim();
+          return cleanLine ? `<li>${cleanLine}</li>` : '';
+        })
+        .join('');
+
+      document.getElementById('strategy-output').innerHTML = formattedStrategy;
+      document.getElementById('loading-section').style.display = 'none';
+      document.getElementById('error-section').style.display = 'none';
+      document.getElementById('results-section').style.display = 'block';
+    }
+
+    function resetForm() {
+      console.log('Resetting form');
+      document.getElementById('swot-form').reset();
+      document.getElementById('loading-section').style.display = 'none';
+      document.getElementById('error-section').style.display = 'none';
+      document.getElementById('results-section').style.display = 'none';
+      showTab('analyze');
+    }
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', function() {
+      console.log('DOM loaded, initializing SWOT Explorer');
+      showTab('learn');
+    });
+  </script>
+</body>
+</html>

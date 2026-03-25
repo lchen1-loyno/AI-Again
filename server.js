@@ -8,10 +8,14 @@ const port = process.env.PORT || 3000;
 // Middleware
 app.use(cors());
 app.use(express.json());
-app.use(express.static('.')); // Serve static files from current directory
-app.use(express.static('public')); // Also serve from public folder
 
-// Simple mock SWOT strategy generator (no API needed!)
+// Redirect base URL to full 3-step SWOT experience
+app.get('/', (req, res) => {
+  res.redirect('/swot-full.html');
+});
+
+app.use(express.static('public')); // Serve from public folder first
+app.use(express.static('.')); // Then serve from current directory
 function generateMockStrategy(strengths, weaknesses, opportunities, threats) {
   // Create intelligent-sounding strategies based on input
   const strategyTemplates = [
@@ -67,7 +71,13 @@ app.post('/generate', async (req, res) => {
   }
 });
 
+// Redirect base URL to full 3-step SWOT experience
+app.get('/', (req, res) => {
+  res.redirect('/swot-full.html');
+});
+
 app.listen(port, () => {
   console.log(`✓ SWOT AI Tool server running at http://localhost:${port}`);
   console.log(`✓ POST endpoint: http://localhost:${port}/generate`);
+  console.log(`✓ Root redirect: http://localhost:${port}/ -> /swot-full.html`);
 });
