@@ -20,12 +20,13 @@ echo "2️⃣  Testing API endpoint..."
 echo ""
 
 # Test the API with sample SWOT data
-echo "Sending test SWOT data to /generate endpoint..."
+echo "Sending test SWOT data to /generate-report endpoint..."
 echo ""
 
-RESPONSE=$(curl -s -X POST http://localhost:3000/generate \
+RESPONSE=$(curl -s -X POST http://localhost:3000/generate-report \
   -H "Content-Type: application/json" \
   -d '{
+    "problem": "How to expand our software development business into enterprise clients",
     "strengths": "Strong development team, Innovative technology, Good market reputation",
     "weaknesses": "Limited budget, Small sales team, Lack of enterprise experience",
     "opportunities": "Growing AI market demand, Partnerships with major companies, Emerging markets",
@@ -38,13 +39,13 @@ echo "$RESPONSE" | jq '.' 2>/dev/null || echo "$RESPONSE"
 echo ""
 echo "3️⃣  Checking response format..."
 
-if echo "$RESPONSE" | grep -q '"result"'; then
-  echo "✅ Response contains 'result' field!"
+if echo "$RESPONSE" | grep -q '"report"'; then
+  echo "✅ Response contains 'report' field!"
   echo ""
-  echo "Sample strategies generated:"
-  echo "$RESPONSE" | jq -r '.result' | head -10
+  echo "Sample report generated:"
+  echo "$RESPONSE" | jq -r '.report' | head -20
 else
-  echo "❌ Response does not contain 'result' field"
+  echo "❌ Response does not contain 'report' field"
   echo "Make sure you have set your OPENAI_API_KEY in .env file"
   exit 1
 fi

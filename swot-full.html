@@ -575,6 +575,20 @@
         </div>
 
         <form id="swot-form">
+          <!-- Problem/Goal Field -->
+          <div style="margin-bottom: 2rem; text-align: center;">
+            <div style="background: #f8f9fa; border-radius: 12px; padding: 2rem; border-left: 4px solid #4f46e5; max-width: 800px; margin: 0 auto;">
+              <h3 style="margin-bottom: 1rem; color: #1e293b;">🎯 Business Problem or Goal</h3>
+              <p style="color: #64748b; font-size: 0.9rem; margin-bottom: 1.5rem;">Describe the specific challenge or goal you want to solve with this SWOT analysis.</p>
+              <textarea
+                id="problem"
+                name="problem"
+                placeholder="Describe the specific challenge or goal you want to solve..."
+                style="width: 100%; min-height: 80px; padding: 1rem; border: 1px solid #d1d5db; border-radius: 8px; font-family: inherit; resize: vertical; font-size: 1rem;"
+                required></textarea>
+            </div>
+          </div>
+
           <div class="swot-form-grid">
             <div class="form-group strengths">
               <h3>💪 Strengths</h3>
@@ -618,7 +632,12 @@
           </div>
 
           <button type="submit" class="generate-button" id="generate-btn">
-            🤖 Generate AI Strategy
+            🤖 Generate Strategic Report
+          </button>
+
+          <!-- Debug button for testing -->
+          <button type="button" onclick="testAPI()" style="margin-top: 1rem; background: #10b981; color: white; border: none; padding: 0.5rem 1rem; border-radius: 6px; cursor: pointer;">
+            🧪 Test API (Debug)
           </button>
         </form>
       </div>
@@ -628,8 +647,8 @@
         <!-- Loading State -->
         <div id="loading-section" class="loading-section" style="display: none;">
           <div class="loading-spinner"></div>
-          <h3>Generating Your Strategy...</h3>
-          <p>AI is analyzing your SWOT data and creating personalized recommendations.</p>
+          <h3>Generating report...</h3>
+          <p>AI is analyzing your problem and SWOT data to create strategic recommendations.</p>
         </div>
 
         <!-- Error Section -->
@@ -640,9 +659,9 @@
 
         <!-- Results Section -->
         <div id="results-section" class="results-section" style="display: none;">
-          <h2 style="text-align: center; margin-bottom: 2rem;">🎯 Your AI-Generated Strategy</h2>
+          <h2 style="text-align: center; margin-bottom: 2rem;">🎯 AI Strategic Recommendations</h2>
           <p style="text-align: center; color: #64748b; margin-bottom: 2rem;">
-            Based on your SWOT analysis, here are personalized recommendations:
+            Based on your problem/goal and SWOT analysis, here are personalized strategic recommendations:
           </p>
           <ul id="strategy-output" class="strategy-list">
             <!-- Strategy content will be inserted here -->
@@ -701,30 +720,41 @@
     // Form handling
     document.getElementById('swot-form').addEventListener('submit', async function(e) {
       e.preventDefault();
-      console.log('Form submitted');
+      console.log('🔥 FORM SUBMITTED - Starting process');
 
       const formData = new FormData(e.target);
       const swotData = {
+        problem: formData.get('problem').trim(),
         strengths: formData.get('strengths').trim(),
         weaknesses: formData.get('weaknesses').trim(),
         opportunities: formData.get('opportunities').trim(),
         threats: formData.get('threats').trim()
       };
 
-      console.log('SWOT data:', swotData);
+      console.log('📋 Collected form data:', swotData);
 
       // Validation
+      if (!swotData.problem) {
+        console.log('❌ Validation failed: Missing problem');
+        showError('Please describe your business problem or goal.');
+        return;
+      }
       if (!swotData.strengths || !swotData.weaknesses || !swotData.opportunities || !swotData.threats) {
+        console.log('❌ Validation failed: Missing SWOT fields');
         showError('Please fill in all four SWOT categories.');
         return;
       }
+
+      console.log('✅ Validation passed - proceeding to API call');
 
       // Show loading state
       showLoading();
 
       try {
-        console.log('Sending SWOT data to API...');
-        const response = await fetch('http://localhost:3000/generate', {
+        console.log('📡 Sending POST request to /generate-report');
+        console.log('📦 Request payload:', JSON.stringify(swotData, null, 2));
+
+        const response = await fetch('/generate-report', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -732,23 +762,36 @@
           body: JSON.stringify(swotData)
         });
 
+        console.log('📡 Response status:', response.status);
+        console.log('📡 Response ok:', response.ok);
+
         if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
+          const errorText = await response.text();
+          console.log('❌ Response not ok. Error text:', errorText);
+          throw new Error(`HTTP error! status: ${response.status}, body: ${errorText}`);
         }
 
         const data = await response.json();
-        console.log('Received response:', data);
+        console.log('📦 Received response data:', data);
 
         if (data.error) {
+          console.log('❌ API returned error:', data.error);
           throw new Error(data.error);
         }
 
+        if (!data.report) {
+          console.log('❌ No report field in response');
+          throw new Error('No report data received from server');
+        }
+
+        console.log('✅ API call successful - showing results');
         // Show results
-        showResults(data.result);
+        showResults(data.report);
         showTab('generate');
 
       } catch (error) {
-        console.error('Error:', error);
+        console.error('💥 Error during API call:', error);
+        console.error('💥 Error message:', error.message);
         showError('Failed to generate strategy. Please try again. Error: ' + error.message);
       }
     });
@@ -769,23 +812,53 @@
       showTab('generate');
     }
 
-    function showResults(strategy) {
-      console.log('Showing results:', strategy);
+    function showResults(report) {
+      console.log('🎯 showResults called with report:', report);
+      console.log('📊 Report type:', typeof report);
+      console.log('📏 Report length:', report.length);
 
-      // Format the strategy as a list
-      const formattedStrategy = strategy.split('\n')
-        .filter(line => line.trim())
-        .map(line => {
-          // Remove bullet points if they exist
-          const cleanLine = line.replace(/^[•\-\*]\s*/, '').trim();
-          return cleanLine ? `<li>${cleanLine}</li>` : '';
-        })
-        .join('');
+      // Format the report as a list - handle various bullet formats
+      let formattedReport = '';
 
-      document.getElementById('strategy-output').innerHTML = formattedStrategy;
+      // Split by double newlines or bullet points
+      const sections = report.split(/\n\s*\n/).filter(section => section.trim());
+      console.log('🔍 Found sections:', sections.length);
+
+      sections.forEach((section, index) => {
+        console.log(`📝 Processing section ${index + 1}:`, section.substring(0, 50) + '...');
+
+        // Clean up each section
+        const cleanSection = section
+          .replace(/^[•\-\*\d+\.\)]\s*/, '') // Remove bullet markers
+          .replace(/\n/g, ' ') // Replace internal newlines with spaces
+          .trim();
+
+        console.log(`🧹 Cleaned section ${index + 1}:`, cleanSection.substring(0, 50) + '...');
+
+        if (cleanSection) {
+          formattedReport += `<li>${cleanSection}</li>`;
+        }
+      });
+
+      console.log('📋 Final formatted HTML:', formattedReport.substring(0, 100) + '...');
+
+      // Update the DOM
+      const outputElement = document.getElementById('strategy-output');
+      console.log('🎯 Output element found:', !!outputElement);
+
+      if (outputElement) {
+        outputElement.innerHTML = formattedReport;
+        console.log('✅ HTML updated successfully');
+      } else {
+        console.error('❌ Could not find strategy-output element');
+      }
+
+      // Show results section
       document.getElementById('loading-section').style.display = 'none';
       document.getElementById('error-section').style.display = 'none';
       document.getElementById('results-section').style.display = 'block';
+
+      console.log('🎉 Results display completed');
     }
 
     function resetForm() {
@@ -797,7 +870,54 @@
       showTab('analyze');
     }
 
-    // Initialize
+    // Debug test function
+    async function testAPI() {
+      console.log('🧪 Starting API test...');
+
+      const testData = {
+        problem: "Expand our software business into enterprise clients",
+        strengths: "Strong development team, Innovative technology, Good market reputation",
+        weaknesses: "Limited budget, Small sales team, Lack of enterprise experience",
+        opportunities: "Growing AI market demand, Partnerships with major companies, Emerging markets",
+        threats: "Intense competition, Rapid tech changes, Economic downturn"
+      };
+
+      console.log('📦 Test data:', testData);
+
+      showLoading();
+
+      try {
+        console.log('📡 Calling API...');
+        const response = await fetch('/generate-report', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(testData)
+        });
+
+        console.log('📡 Response status:', response.status);
+
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}`);
+        }
+
+        const data = await response.json();
+        console.log('📦 Response data:', data);
+
+        if (data.report) {
+          console.log('✅ Success! Showing results...');
+          showResults(data.report);
+          showTab('generate');
+        } else {
+          throw new Error('No report in response');
+        }
+
+      } catch (error) {
+        console.error('❌ Test failed:', error);
+        showError('Test failed: ' + error.message);
+      }
+    }
     document.addEventListener('DOMContentLoaded', function() {
       console.log('DOM loaded, initializing SWOT Explorer');
       showTab('learn');
